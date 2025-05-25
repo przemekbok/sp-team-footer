@@ -1,34 +1,299 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
 .spTeamFooter {
-  overflow: hidden;
-  padding: 1em;
+  padding: 2rem;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", sans-serif;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+  
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
 }
 
-.welcome {
+.placeholder {
   text-align: center;
+  padding: 4rem 2rem;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  
+  .placeholderIcon {
+    font-size: 48px;
+    margin-bottom: 1rem;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+  }
+  
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
 }
 
-.welcomeImage {
-  width: 100%;
-  max-width: 420px;
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: "[theme:errorText, default: #a80000]";
+  color: var(--errorText);
+  
+  .errorIcon {
+    font-size: 48px;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
 }
 
-.links {
-  a {
-    text-decoration: none;
-    color: "[theme:link, default:#03787c]";
-    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  
+  .spinner {
+    font-size: 24px;
+    margin-right: 0.5rem;
+    animation: spin 1.5s linear infinite;
+  }
+  
+  span {
+    font-size: 16px;
+    vertical-align: middle;
+  }
+}
 
-    &:hover {
-      text-decoration: underline;
-      color: "[theme:linkHovered, default: #014446]";
-      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.section {
+  margin-bottom: 3rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+  border-color: "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+}
+
+// Center Director Section
+.directorTile {
+  background: "[theme:white, default: #ffffff]";
+  background: var(--white);
+  border: 1px solid;
+  border-color: "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+}
+
+// Center Managers Section
+.managerGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.managerTile {
+  background: "[theme:white, default: #ffffff]";
+  background: var(--white);
+  border: 2px solid;
+  border-color: "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #ff8c00;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #ff8c00;
     }
+  }
+  
+  &.selected {
+    background: #ff8c00;
+    border-color: #ff8c00;
+    color: white;
+    
+    [class*="ms-Persona-primaryText"],
+    [class*="ms-Persona-secondaryText"],
+    [class*="ms-Persona-tertiaryText"] {
+      color: white !important;
+    }
+  }
+}
+
+// Team Breakdown Section
+.teamSection {
+  background: "[theme:white, default: #ffffff]";
+  background: var(--white);
+  border: 1px solid;
+  border-color: "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.teamName {
+  font-size: 20px;
+  font-weight: 600;
+  color: "[theme:themePrimary, default: #0078d4]";
+  color: var(--themePrimary);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid;
+  border-color: "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+}
+
+.teamDescription {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.descriptionColumn {
+  display: flex;
+  gap: 1rem;
+}
+
+.columnLine {
+  width: 4px;
+  background: #ff8c00;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.columnContent {
+  flex: 1;
+  line-height: 1.6;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  text-align: justify;
+}
+
+.subsection {
+  margin-top: 1.5rem;
+  
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.subsectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .icon {
+    color: #ff8c00;
+    font-size: 18px;
+  }
+}
+
+.locationList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.location {
+  background: "[theme:neutralLight, default: #edebe9]";
+  background: var(--neutralLight);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 14px;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+}
+
+.leaderGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  
+  [class*="ms-Persona"] {
+    background: "[theme:neutralLighter, default: #f3f2f1]";
+    background: var(--neutralLighter);
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+}
+
+// Override Fluent UI styles for dark theme
+.spTeamFooter[data-theme="dark"] {
+  .directorTile,
+  .managerTile,
+  .teamSection {
+    background: "[theme:neutralDark, default: #201f1e]";
+    background: var(--neutralDark);
+  }
+  
+  .managerTile.selected {
+    background: #ff8c00;
+  }
+  
+  .location {
+    background: "[theme:neutralQuaternary, default: #3b3a39]";
+    background: var(--neutralQuaternary);
+  }
+  
+  .leaderGrid [class*="ms-Persona"] {
+    background: "[theme:neutralQuaternary, default: #3b3a39]";
+    background: var(--neutralQuaternary);
   }
 }
