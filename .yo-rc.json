@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.18.2",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "sp-team-footer-solution",
+    "libraryId": "c1f20bfa-8141-419b-9242-62cbd60f5b05",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "sp-team-footer-solution",
+    "solutionShortDescription": "sp-team-footer-solution description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

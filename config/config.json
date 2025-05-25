@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "sp-team-footer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/spTeamFooter/SpTeamFooterWebPart.js",
+          "manifest": "./src/webparts/spTeamFooter/SpTeamFooterWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "SpTeamFooterWebPartStrings": "lib/webparts/spTeamFooter/loc/{locale}.js"
+  }
+}

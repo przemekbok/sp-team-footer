@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "sp-team-footer-solution-client-side-solution",
+    "id": "c1f20bfa-8141-419b-9242-62cbd60f5b05",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "sp-team-footer-solution description"
+      },
+      "longDescription": {
+        "default": "sp-team-footer-solution description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "sp-team-footer-solution Feature",
+        "description": "The feature that activates elements of the sp-team-footer-solution solution.",
+        "id": "44bfba5b-4084-46a4-9df3-7cbd39faa65a",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/sp-team-footer-solution.sppkg"
+  }
+}
