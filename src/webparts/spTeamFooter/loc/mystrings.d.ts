@@ -11,6 +11,10 @@ declare interface ISpTeamFooterWebPartStrings {
   AppOfficeEnvironment: string;
   AppOutlookEnvironment: string;
   UnknownEnvironment: string;
+  ListFieldLabel: string;
+  CenterDirectorFieldLabel: string;
+  CreateNewListLabel: string;
+  ViewSelectedListLabel: string;
 }
 
 declare module 'SpTeamFooterWebPartStrings' {
