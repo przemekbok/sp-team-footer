@@ -3,46 +3,103 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneDropdown,
+  PropertyPaneLink,
+  IPropertyPaneDropdownOption
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { PropertyFieldPeoplePicker, PrincipalType } from '@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 import * as strings from 'SpTeamFooterWebPartStrings';
 import SpTeamFooter from './components/SpTeamFooter';
 import { ISpTeamFooterProps } from './components/ISpTeamFooterProps';
 
 export interface ISpTeamFooterWebPartProps {
-  description: string;
+  listId: string;
+  centerDirector: string;
 }
 
 export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFooterWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
+  private _siteLists: IPropertyPaneDropdownOption[] = [];
+  private _centerDirectorData: any = null;
 
   public render(): void {
     const element: React.ReactElement<ISpTeamFooterProps> = React.createElement(
       SpTeamFooter,
       {
-        description: this.properties.description,
+        listId: this.properties.listId,
+        centerDirector: this.properties.centerDirector,
+        centerDirectorData: this._centerDirectorData,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        context: this.context,
+        httpClient: this.context.spHttpClient,
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
+  protected async onInit(): Promise<void> {
+    await super.onInit();
+    
+    // Load site lists
+    await this._loadSiteLists();
+
+    // Load center director data if available
+    if (this.properties.centerDirector) {
+      await this._loadCenterDirectorData();
+    }
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
   }
 
+  private async _loadSiteLists(): Promise<void> {
+    try {
+      const response: SPHttpClientResponse = await this.context.spHttpClient.get(
+        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title`,
+        SPHttpClient.configurations.v1
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        this._siteLists = data.value.map((list: any) => ({
+          key: list.Id,
+          text: list.Title
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading site lists:', error);
+    }
+  }
 
+  private async _loadCenterDirectorData(): Promise<void> {
+    try {
+      if (this.properties.centerDirector) {
+        const userInfo = JSON.parse(this.properties.centerDirector)[0];
+        const response: SPHttpClientResponse = await this.context.spHttpClient.get(
+          `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
+          SPHttpClient.configurations.v1
+        );
+        
+        if (response.ok) {
+          this._centerDirectorData = await response.json();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading center director data:', error);
+    }
+  }
 
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
@@ -89,6 +146,19 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
 
   }
 
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): Promise<void> {
+    if (propertyPath === 'centerDirector') {
+      this.properties.centerDirector = newValue;
+      await this._loadCenterDirectorData();
+      this.context.propertyPane.refresh();
+      this.render();
+    } else if (propertyPath === 'listId') {
+      this.properties.listId = newValue;
+      this.context.propertyPane.refresh();
+      this.render();
+    }
+  }
+
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
   }
@@ -98,6 +168,10 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+    const listViewUrl = this.properties.listId ? 
+      `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listedit.aspx?List={${this.properties.listId}}` : '';
+    const newListUrl = `${this.context.pageContext.web.absoluteUrl}/_layouts/15/new.aspx?FeatureId={00bfea71-de22-43b2-a848-c05709900100}&ListTemplate=100`;
+
     return {
       pages: [
         {
@@ -108,10 +182,33 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneDropdown('listId', {
+                  label: 'Select List',
+                  options: this._siteLists,
+                  selectedKey: this.properties.listId
+                }),
+                this.properties.listId && PropertyPaneLink('', {
+                  text: 'Create New List',
+                  href: newListUrl,
+                  target: '_blank'
+                }),
+                this.properties.listId && PropertyPaneLink('', {
+                  text: 'View Selected List',
+                  href: listViewUrl,
+                  target: '_blank'
+                }),
+                PropertyFieldPeoplePicker('centerDirector', {
+                  label: 'Center Director',
+                  initialData: this.properties.centerDirector,
+                  allowDuplicate: false,
+                  multiSelect: false,
+                  principalType: [PrincipalType.Users],
+                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                  context: this.context as any,
+                  properties: this.properties,
+                  key: 'centerDirectorFieldId'
                 })
-              ]
+              ].filter(Boolean)
             }
           ]
         }
