@@ -9,7 +9,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-import { PropertyFieldPeoplePicker, PrincipalType } from '@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker';
+import { PropertyFieldPeoplePicker, PrincipalType, IPropertyFieldGroupOrPerson } from '@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker';
 import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 import * as strings from 'SpTeamFooterWebPartStrings';
@@ -18,7 +18,7 @@ import { ISpTeamFooterProps } from './components/ISpTeamFooterProps';
 
 export interface ISpTeamFooterWebPartProps {
   listId: string;
-  centerDirector: string;
+  centerDirector: IPropertyFieldGroupOrPerson[];
 }
 
 export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFooterWebPartProps> {
@@ -33,7 +33,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
       SpTeamFooter,
       {
         listId: this.properties.listId,
-        centerDirector: this.properties.centerDirector,
+        centerDirector: this.properties.centerDirector ? JSON.stringify(this.properties.centerDirector) : '',
         centerDirectorData: this._centerDirectorData,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
@@ -55,7 +55,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     await this._loadSiteLists();
 
     // Load center director data if available
-    if (this.properties.centerDirector) {
+    if (this.properties.centerDirector && this.properties.centerDirector.length > 0) {
       await this._loadCenterDirectorData();
     }
 
@@ -67,7 +67,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   private async _loadSiteLists(): Promise<void> {
     try {
       const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title`,
+        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title&$filter=Hidden eq false`,
         SPHttpClient.configurations.v1
       );
       
@@ -85,8 +85,8 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
 
   private async _loadCenterDirectorData(): Promise<void> {
     try {
-      if (this.properties.centerDirector) {
-        const userInfo = JSON.parse(this.properties.centerDirector)[0];
+      if (this.properties.centerDirector && this.properties.centerDirector.length > 0) {
+        const userInfo = this.properties.centerDirector[0];
         const response: SPHttpClientResponse = await this.context.spHttpClient.get(
           `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
           SPHttpClient.configurations.v1
