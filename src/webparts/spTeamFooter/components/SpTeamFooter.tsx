@@ -120,7 +120,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
   }
 
   private renderCenterDirector(): React.ReactElement {
-    const { centerDirectorData, centerDirector } = this.props;
+    const { centerDirector } = this.props;
     
     if (!centerDirector) return <></>;
 
