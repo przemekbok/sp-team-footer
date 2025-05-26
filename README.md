@@ -1,22 +1,20 @@
-# SharePoint Team Footer Web Part
+# SharePoint Team Footer Web Part - Minimal Design
 
 ## Summary
 
-A modern SharePoint Framework (SPFx) web part that displays team organizational structure with interactive features. The web part shows Center Director information, Center Managers with clickable tiles, and detailed team breakdowns when a manager is selected.
-
-![Team Footer Web Part](docs/team-footer-preview.png)
+A clean and minimal SharePoint Framework (SPFx) web part that displays team organizational structure. The web part shows Center Director information, Center Managers in a simple list format, and detailed team breakdowns when a manager is selected.
 
 ## Features
 
 - **Center Director Section**: Displays static information about the center director from web part properties
 - **Center Managers Section**: Shows unique center managers from SharePoint list with:
-  - Clickable tiles with hover effects (orange highlight)
-  - 3-column responsive grid layout
-  - Orange background when selected
+  - Simple list format with clean borders
+  - Clickable items with subtle hover effects
+  - Minimal styling focused on readability
 - **Team Breakdown Section**: Displays detailed team information when a manager is selected:
-  - Team name and description (two-column layout with orange left border)
-  - Locations with badge-style display
-  - Team Leaders and Tech Leaders with profile pictures
+  - Team name and description in simple text format
+  - Locations displayed as comma-separated text
+  - Team Leaders and Tech Leaders in clean list format
 
 ## Used SharePoint Framework Version
 
@@ -49,6 +47,7 @@ A modern SharePoint Framework (SPFx) web part that displays team organizational 
 | Version | Date             | Comments        |
 | ------- | ---------------- | --------------- |
 | 1.0     | May 26, 2025     | Initial release |
+| 1.1     | May 26, 2025     | Minimal design rework |
 
 ## Disclaimer
 
@@ -92,38 +91,49 @@ gulp serve
 
 This will open your default browser with the SharePoint workbench where you can test the web part.
 
+## Design Philosophy
+
+This version focuses on:
+- **Minimalism**: Clean, simple design without unnecessary visual elements
+- **Readability**: Clear typography and proper spacing for easy reading
+- **Functionality**: Focus on content over decoration
+- **Accessibility**: High contrast and clear visual hierarchy
+- **Simplicity**: Straightforward interaction patterns
+
 ## Features in Detail
 
 ### Center Director Section
 - Displays the selected person's photo, name, job title, and email
-- Static tile with no interaction
+- Simple card layout with clean borders
 - Information comes from web part properties
 
 ### Center Managers Section
 - Retrieves unique center managers from the selected list
-- Displays in a responsive 3-column grid (adapts to 2 columns on tablets, 1 on mobile)
-- Hover effect: Orange border and top accent
-- Click effect: Orange background with white text
+- Displays in a vertical list format
+- Subtle hover effect for better UX
+- Selected state with simple background change
 - Shows manager's photo, name, job title, and department
 
 ### Team Breakdown Section
 - Appears only when a center manager is selected
 - Shows all teams associated with the selected manager
 - Each team displays:
-  - **Team Name**: Prominent header
-  - **Team Description**: Two-column layout with orange accent lines
-  - **Locations**: Badge-style chips for each location
-  - **Team Leaders**: Grid of personas with photos and names
-  - **Tech Leaders**: Grid of personas with photos and names
-- Empty sections are automatically hidden
+  - **Team Name**: Simple header with underline
+  - **Team Description**: Clean paragraph text
+  - **Locations**: Comma-separated list
+  - **Team Leaders**: Simple list with person cards
+  - **Tech Leaders**: Simple list with person cards
+- Clean section separators and consistent spacing
 
 ## Styling
 
 The web part uses:
-- Fluent UI React components for consistent Microsoft 365 styling
-- Custom SCSS modules for specific design requirements
+- Minimal custom styling focused on clean presentation
+- Fluent UI React components for consistency
 - Theme-aware colors that adapt to SharePoint themes
-- Responsive design for mobile, tablet, and desktop views
+- Simple borders and spacing for visual hierarchy
+- No animations or complex visual effects
+- Responsive design for all device sizes
 
 ## References
 
