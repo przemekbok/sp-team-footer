@@ -5,7 +5,8 @@ import {
   type IPropertyPaneConfiguration,
   PropertyPaneDropdown,
   PropertyPaneLink,
-  IPropertyPaneDropdownOption
+  IPropertyPaneDropdownOption,
+  IPropertyPaneField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -172,6 +173,43 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
       `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listedit.aspx?List={${this.properties.listId}}` : '';
     const newListUrl = `${this.context.pageContext.web.absoluteUrl}/_layouts/15/new.aspx?FeatureId={00bfea71-de22-43b2-a848-c05709900100}&ListTemplate=100`;
 
+    const fields: IPropertyPaneField<any>[] = [
+      PropertyPaneDropdown('listId', {
+        label: 'Select List',
+        options: this._siteLists,
+        selectedKey: this.properties.listId
+      })
+    ];
+
+    if (this.properties.listId) {
+      fields.push(
+        PropertyPaneLink('', {
+          text: 'Create New List',
+          href: newListUrl,
+          target: '_blank'
+        }),
+        PropertyPaneLink('', {
+          text: 'View Selected List',
+          href: listViewUrl,
+          target: '_blank'
+        })
+      );
+    }
+
+    fields.push(
+      PropertyFieldPeoplePicker('centerDirector', {
+        label: 'Center Director',
+        initialData: this.properties.centerDirector,
+        allowDuplicate: false,
+        multiSelect: false,
+        principalType: [PrincipalType.Users],
+        onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+        context: this.context as any,
+        properties: this.properties,
+        key: 'centerDirectorFieldId'
+      })
+    );
+
     return {
       pages: [
         {
@@ -181,34 +219,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
           groups: [
             {
               groupName: strings.BasicGroupName,
-              groupFields: [
-                PropertyPaneDropdown('listId', {
-                  label: 'Select List',
-                  options: this._siteLists,
-                  selectedKey: this.properties.listId
-                }),
-                this.properties.listId && PropertyPaneLink('', {
-                  text: 'Create New List',
-                  href: newListUrl,
-                  target: '_blank'
-                }),
-                this.properties.listId && PropertyPaneLink('', {
-                  text: 'View Selected List',
-                  href: listViewUrl,
-                  target: '_blank'
-                }),
-                PropertyFieldPeoplePicker('centerDirector', {
-                  label: 'Center Director',
-                  initialData: this.properties.centerDirector,
-                  allowDuplicate: false,
-                  multiSelect: false,
-                  principalType: [PrincipalType.Users],
-                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
-                  context: this.context as any,
-                  properties: this.properties,
-                  key: 'centerDirectorFieldId'
-                })
-              ].filter(Boolean)
+              groupFields: fields
             }
           ]
         }
