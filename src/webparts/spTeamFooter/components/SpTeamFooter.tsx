@@ -3,7 +3,6 @@ import styles from './SpTeamFooter.module.scss';
 import { ISpTeamFooterProps, ICenterManager, ITeamData } from './ISpTeamFooterProps';
 import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import { Persona, PersonaSize } from '@fluentui/react/lib/Persona';
-import { Icon } from '@fluentui/react/lib/Icon';
 
 interface ISpTeamFooterState {
   centerManagers: ICenterManager[];
@@ -138,14 +137,14 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
 
     return (
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Center Director</h2>
-        <div className={styles.directorTile}>
+        <h3 className={styles.sectionTitle}>Center Director</h3>
+        <div className={styles.personCard}>
           <Persona
             imageUrl={`/_layouts/15/userphoto.aspx?size=L&accountname=${directorInfo.email}`}
             text={directorInfo.text}
             secondaryText={directorInfo.jobTitle || 'Center Director'}
             tertiaryText={directorInfo.email}
-            size={PersonaSize.size72}
+            size={PersonaSize.size48}
             imageAlt={directorInfo.text}
           />
         </div>
@@ -158,12 +157,12 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
 
     return (
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Center Managers</h2>
-        <div className={styles.managerGrid}>
+        <h3 className={styles.sectionTitle}>Center Managers</h3>
+        <div className={styles.managerList}>
           {centerManagers.map((manager) => (
             <div
               key={manager.id}
-              className={`${styles.managerTile} ${selectedManager?.id === manager.id ? styles.selected : ''}`}
+              className={`${styles.personCard} ${styles.clickable} ${selectedManager?.id === manager.id ? styles.selected : ''}`}
               onClick={() => this.handleManagerClick(manager)}
             >
               <Persona
@@ -171,7 +170,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
                 text={manager.title}
                 secondaryText={manager.jobTitle}
                 tertiaryText={manager.department}
-                size={PersonaSize.size48}
+                size={PersonaSize.size40}
                 imageAlt={manager.title}
               />
             </div>
@@ -188,57 +187,37 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
 
     return (
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Team Breakdown</h2>
+        <h3 className={styles.sectionTitle}>Teams under {selectedManager.title}</h3>
         {teamData.map((team) => (
-          <div key={team.id} className={styles.teamSection}>
-            <h3 className={styles.teamName}>{team.teamName}</h3>
+          <div key={team.id} className={styles.teamCard}>
+            <h4 className={styles.teamName}>{team.teamName}</h4>
             
             {team.teamDescription && (
-              <div className={styles.teamDescription}>
-                <div className={styles.descriptionColumn}>
-                  <div className={styles.columnLine}></div>
-                  <div className={styles.columnContent}>
-                    {team.teamDescription.substring(0, Math.ceil(team.teamDescription.length / 2))}
-                  </div>
-                </div>
-                <div className={styles.descriptionColumn}>
-                  <div className={styles.columnLine}></div>
-                  <div className={styles.columnContent}>
-                    {team.teamDescription.substring(Math.ceil(team.teamDescription.length / 2))}
-                  </div>
-                </div>
-              </div>
+              <p className={styles.teamDescription}>{team.teamDescription}</p>
             )}
 
             {team.locations.length > 0 && (
               <div className={styles.subsection}>
-                <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="MapPin" className={styles.icon} />
-                  Locations
-                </h4>
+                <div className={styles.subsectionTitle}>Locations:</div>
                 <div className={styles.locationList}>
-                  {team.locations.map((location, index) => (
-                    <span key={index} className={styles.location}>{location}</span>
-                  ))}
+                  {team.locations.join(', ')}
                 </div>
               </div>
             )}
 
             {team.teamLeaders.length > 0 && (
               <div className={styles.subsection}>
-                <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="People" className={styles.icon} />
-                  Team Leaders
-                </h4>
-                <div className={styles.leaderGrid}>
+                <div className={styles.subsectionTitle}>Team Leaders:</div>
+                <div className={styles.personList}>
                   {team.teamLeaders.map((leader) => (
-                    <Persona
-                      key={leader.Id}
-                      imageUrl={`/_layouts/15/userphoto.aspx?size=S&accountname=${leader.EMail}`}
-                      text={leader.Title}
-                      size={PersonaSize.size32}
-                      imageAlt={leader.Title}
-                    />
+                    <div key={leader.Id} className={styles.personItem}>
+                      <Persona
+                        imageUrl={`/_layouts/15/userphoto.aspx?size=S&accountname=${leader.EMail}`}
+                        text={leader.Title}
+                        size={PersonaSize.size32}
+                        imageAlt={leader.Title}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -246,19 +225,17 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
 
             {team.techLeaders.length > 0 && (
               <div className={styles.subsection}>
-                <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="DeveloperTools" className={styles.icon} />
-                  Tech Leaders
-                </h4>
-                <div className={styles.leaderGrid}>
+                <div className={styles.subsectionTitle}>Tech Leaders:</div>
+                <div className={styles.personList}>
                   {team.techLeaders.map((leader) => (
-                    <Persona
-                      key={leader.Id}
-                      imageUrl={`/_layouts/15/userphoto.aspx?size=S&accountname=${leader.EMail}`}
-                      text={leader.Title}
-                      size={PersonaSize.size32}
-                      imageAlt={leader.Title}
-                    />
+                    <div key={leader.Id} className={styles.personItem}>
+                      <Persona
+                        imageUrl={`/_layouts/15/userphoto.aspx?size=S&accountname=${leader.EMail}`}
+                        text={leader.Title}
+                        size={PersonaSize.size32}
+                        imageAlt={leader.Title}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -276,8 +253,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
     if (!listId) {
       return (
         <div className={styles.spTeamFooter}>
-          <div className={styles.placeholder}>
-            <Icon iconName="Info" className={styles.placeholderIcon} />
+          <div className={styles.message}>
             <p>Please configure the web part by selecting a list from the property pane.</p>
           </div>
         </div>
@@ -288,8 +264,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
       return (
         <div className={styles.spTeamFooter}>
           <div className={styles.error}>
-            <Icon iconName="ErrorBadge" className={styles.errorIcon} />
-            <p>{error}</p>
+            <p>Error: {error}</p>
           </div>
         </div>
       );
@@ -302,8 +277,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
         {this.renderTeamBreakdown()}
         {loading && (
           <div className={styles.loading}>
-            <Icon iconName="Sync" className={styles.spinner} />
-            <span>Loading...</span>
+            <p>Loading...</p>
           </div>
         )}
       </div>
