@@ -68,7 +68,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   private async _loadSiteLists(): Promise<void> {
     try {
       const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title&$filter=Hidden eq false`,
+        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title,EntityTypeName&$filter=Hidden eq false`,
         SPHttpClient.configurations.v1
       );
       
@@ -76,11 +76,45 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
         const data = await response.json();
         this._siteLists = data.value.map((list: any) => ({
           key: list.Id,
-          text: list.Title
+          text: list.Title,
+          data: {
+            entityTypeName: list.EntityTypeName,
+            title: list.Title
+          }
         }));
       }
     } catch (error) {
       console.error('Error loading site lists:', error);
+    }
+  }
+
+  private _getListNameFromId(listId: string): string {
+    const list = this._siteLists.find(list => list.key === listId);
+    return list ? list.data?.entityTypeName || list.text : '';
+  }
+
+  private _getListTitleFromId(listId: string): string {
+    const list = this._siteLists.find(list => list.key === listId);
+    return list ? list.text : '';
+  }
+
+  private _generateListViewUrl(listId: string): string {
+    if (!listId) return '';
+    
+    const listName = this._getListNameFromId(listId);
+    const listTitle = this._getListTitleFromId(listId);
+    
+    // Try different URL patterns based on list type and availability
+    if (listName) {
+      // For custom lists, use the EntityTypeName in the URL
+      return `${this.context.pageContext.web.absoluteUrl}/Lists/${listName}`;
+    } else if (listTitle) {
+      // Fallback: Use the list title with proper encoding
+      const encodedTitle = encodeURIComponent(listTitle.replace(/ /g, ''));
+      return `${this.context.pageContext.web.absoluteUrl}/Lists/${encodedTitle}`;
+    } else {
+      // Final fallback: Use the generic list view with list ID
+      return `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listform.aspx?PageType=0&ListId={${listId}}`;
     }
   }
 
@@ -178,8 +212,8 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    const listViewUrl = this.properties.listId ? 
-      `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listedit.aspx?List={${this.properties.listId}}` : '';
+    // Generate proper list view URL using list name instead of edit URL
+    const listViewUrl = this.properties.listId ? this._generateListViewUrl(this.properties.listId) : '';
     const newListUrl = `${this.context.pageContext.web.absoluteUrl}/_layouts/15/new.aspx?FeatureId={00bfea71-de22-43b2-a848-c05709900100}&ListTemplate=100`;
 
     const fields: IPropertyPaneField<any>[] = [
