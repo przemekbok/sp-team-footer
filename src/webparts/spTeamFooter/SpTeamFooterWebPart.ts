@@ -107,11 +107,6 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     
     const listInfo = this._listsInfo[listId];
     
-    // Try different URL patterns based on list type and availability
-    // if (listInfo.entityTypeName) {
-    //   // For custom lists, use the EntityTypeName in the URL
-    //   return `${this.context.pageContext.web.absoluteUrl}/Lists/${listInfo.entityTypeName}`;
-    // } else 
     if (listInfo.title) {
       // Fallback: Use the list title with proper encoding
       const encodedTitle = encodeURIComponent(listInfo.title);
@@ -126,10 +121,6 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     try {
       if (this.properties.centerDirector && this.properties.centerDirector.length > 0) {
         const userInfo = this.properties.centerDirector[0];
-        // const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-        //   `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
-        //   SPHttpClient.configurations.v1
-        // );
 
         const responseDetailed: SPHttpClientResponse = await this.context.spHttpClient.get(
           `${this.context.pageContext.web.absoluteUrl}/_api/SP.UserProfiles.PeopleManager/GetPropertiesFor(accountName='${encodeURIComponent(userInfo.id!)}')`,
@@ -137,11 +128,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
         );
 
         if (responseDetailed.ok) {
-          var xd = await responseDetailed.json();
-
-          console.log(xd);
-
-          this._centerDirectorData = xd;
+          this._centerDirectorData = await responseDetailed.json();
         }
       }
     } catch (error) {
