@@ -86,6 +86,8 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
           text: list.Title
         }));
 
+        console.log(data.value);
+
         // Store additional list info separately
         data.value.forEach((list: any) => {
           this._listsInfo[list.Id] = {
@@ -106,12 +108,13 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     const listInfo = this._listsInfo[listId];
     
     // Try different URL patterns based on list type and availability
-    if (listInfo.entityTypeName) {
-      // For custom lists, use the EntityTypeName in the URL
-      return `${this.context.pageContext.web.absoluteUrl}/Lists/${listInfo.entityTypeName}`;
-    } else if (listInfo.title) {
+    // if (listInfo.entityTypeName) {
+    //   // For custom lists, use the EntityTypeName in the URL
+    //   return `${this.context.pageContext.web.absoluteUrl}/Lists/${listInfo.entityTypeName}`;
+    // } else 
+    if (listInfo.title) {
       // Fallback: Use the list title with proper encoding
-      const encodedTitle = encodeURIComponent(listInfo.title.replace(/ /g, ''));
+      const encodedTitle = encodeURIComponent(listInfo.title);
       return `${this.context.pageContext.web.absoluteUrl}/Lists/${encodedTitle}`;
     } else {
       // Final fallback: Use the generic list view with list ID
