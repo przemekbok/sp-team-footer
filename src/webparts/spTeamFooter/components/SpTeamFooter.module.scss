@@ -138,8 +138,8 @@
   }
   
   &.selected {
-    background: #ff8c00;
-    border-color: #ff8c00;
+    background: #ff5a00;
+    border-color: #ff5a00;
     color: white;
     
     [class*="ms-Persona-primaryText"],
@@ -167,7 +167,7 @@
 }
 
 .teamName {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: "[theme:themePrimary, default: #0078d4]";
   color: var(--themePrimary);
@@ -192,7 +192,7 @@
 
 .columnLine {
   width: 4px;
-  background: #ff8c00;
+  background: "[theme:neutralLight, default: #edebe9]";
   border-radius: 2px;
   flex-shrink: 0;
 }
@@ -224,7 +224,7 @@
   gap: 0.5rem;
   
   .icon {
-    color: #ff8c00;
+    color: #ff5a00;
     font-size: 18px;
   }
 }
@@ -266,7 +266,7 @@
   }
   
   .managerTile.selected {
-    background: #ff8c00;
+    background: #ff5a00;
   }
   
   .location {

@@ -183,6 +183,32 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
     );
   }
 
+  private splitTeamBreakdown(input: string, pageNumber: number): string[]
+  {
+        // Split the string into an array of lines
+        const lines = input.split('\n');
+    
+        // Calculate the midpoint
+        const midpoint = Math.ceil(lines.length / 2);
+        
+        // Split into two parts
+        const firstHalf = lines.slice(0, midpoint);
+        const secondHalf = lines.slice(midpoint);
+        
+        if (pageNumber === 1)
+        {
+          return firstHalf;
+        }
+        else if(pageNumber === 2)
+        {
+          return secondHalf;
+        }
+        else
+        {
+          return firstHalf;
+        }
+  }
+
   private renderTeamBreakdown(): React.ReactElement | null {
     const { selectedManager, teamData } = this.state;
 
@@ -200,13 +226,21 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
                 <div className={styles.descriptionColumn}>
                   <div className={styles.columnLine}></div>
                   <div className={styles.columnContent}>
-                    {team.teamDescription.substring(0, Math.ceil(team.teamDescription.length / 2))}
+                    {this.splitTeamBreakdown(team.teamDescription,1).map((row) => (
+                      <div>
+                        {row}<br/>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className={styles.descriptionColumn}>
                   <div className={styles.columnLine}></div>
                   <div className={styles.columnContent}>
-                    {team.teamDescription.substring(Math.ceil(team.teamDescription.length / 2))}
+                  {this.splitTeamBreakdown(team.teamDescription,2).map((row) => (
+                      <div>
+                        {row}<br/>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
