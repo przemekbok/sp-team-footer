@@ -93,7 +93,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
           id: item.Id,
           teamName: item.TeamName || '',
           teamDescription: item.TeamDescription || '',
-          locations: item.Locations ? item.Locations.split(';#').filter((l: string) => l) : [],
+          locations: item.Locations || [],
           teamLeaders: item.TeamLeaders || [],
           techLeaders: item.TechLeaders || [],
           centerManager: item.CenterManager
@@ -130,6 +130,8 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
       if (parsed && parsed[0]) {
         directorInfo = parsed[0];
       }
+
+      console.log(directorInfo);
     } catch (error) {
       console.error('Error parsing center director:', error);
     }
@@ -142,10 +144,10 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
         <div className={styles.directorTile}>
           <Persona
             imageUrl={`/_layouts/15/userphoto.aspx?size=L&accountname=${directorInfo.email}`}
-            text={directorInfo.text}
+            text={directorInfo.fullName}
             secondaryText={directorInfo.jobTitle || 'Center Director'}
-            tertiaryText={directorInfo.email}
-            size={PersonaSize.size72}
+            tertiaryText={''}
+            size={PersonaSize.size48}
             imageAlt={directorInfo.text}
           />
         </div>
@@ -213,7 +215,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
             {team.locations.length > 0 && (
               <div className={styles.subsection}>
                 <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="MapPin" className={styles.icon} />
+                  {/* <Icon iconName="MapPin" className={styles.icon} /> */}
                   Locations
                 </h4>
                 <div className={styles.locationList}>
@@ -227,7 +229,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
             {team.teamLeaders.length > 0 && (
               <div className={styles.subsection}>
                 <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="People" className={styles.icon} />
+                  {/* <Icon iconName="People" className={styles.icon} /> */}
                   Team Leaders
                 </h4>
                 <div className={styles.leaderGrid}>
@@ -247,7 +249,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
             {team.techLeaders.length > 0 && (
               <div className={styles.subsection}>
                 <h4 className={styles.subsectionTitle}>
-                  <Icon iconName="DeveloperTools" className={styles.icon} />
+                  {/* <Icon iconName="DeveloperTools" className={styles.icon} /> */}
                   Tech Leaders
                 </h4>
                 <div className={styles.leaderGrid}>

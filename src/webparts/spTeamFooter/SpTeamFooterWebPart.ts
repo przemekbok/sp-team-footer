@@ -88,13 +88,22 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     try {
       if (this.properties.centerDirector && this.properties.centerDirector.length > 0) {
         const userInfo = this.properties.centerDirector[0];
-        const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-          `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
+        // const response: SPHttpClientResponse = await this.context.spHttpClient.get(
+        //   `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
+        //   SPHttpClient.configurations.v1
+        // );
+
+        const responseDetailed: SPHttpClientResponse = await this.context.spHttpClient.get(
+          `${this.context.pageContext.web.absoluteUrl}/_api/SP.UserProfiles.PeopleManager/GetPropertiesFor(accountName='${encodeURIComponent(userInfo.id!)}')`,
           SPHttpClient.configurations.v1
         );
-        
-        if (response.ok) {
-          this._centerDirectorData = await response.json();
+
+        if (responseDetailed.ok) {
+          var xd = await responseDetailed.json();
+
+          console.log(xd);
+
+          this._centerDirectorData = xd;
         }
       }
     } catch (error) {
