@@ -224,20 +224,20 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
             {team.teamDescription && (
               <div className={styles.teamDescription}>
                 <div className={styles.descriptionColumn}>
-                  <div className={styles.columnLine}></div>
+                  <div className={styles.columnLine}/>
                   <div className={styles.columnContent}>
-                    {this.splitTeamBreakdown(team.teamDescription,1).map((row) => (
-                      <div>
+                    {this.splitTeamBreakdown(team.teamDescription,1).map((row,id) => (
+                      <div key={id}>
                         {row}<br/>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className={styles.descriptionColumn}>
-                  <div className={styles.columnLine}></div>
+                  <div className={styles.columnLine}/>
                   <div className={styles.columnContent}>
-                  {this.splitTeamBreakdown(team.teamDescription,2).map((row) => (
-                      <div>
+                  {this.splitTeamBreakdown(team.teamDescription,2).map((row,id) => (
+                      <div key={id}>
                         {row}<br/>
                       </div>
                     ))}
