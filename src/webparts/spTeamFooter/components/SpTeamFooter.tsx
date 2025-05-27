@@ -92,7 +92,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
           id: item.Id,
           teamName: item.TeamName || '',
           teamDescription: item.TeamDescription || '',
-          locations: item.Locations ? item.Locations.split(';#').filter((l: string) => l) : [],
+          locations: item.Locations || [],
           teamLeaders: item.TeamLeaders || [],
           techLeaders: item.TechLeaders || [],
           centerManager: item.CenterManager
@@ -119,7 +119,7 @@ export default class SpTeamFooter extends React.Component<ISpTeamFooterProps, IS
   }
 
   private renderCenterDirector(): React.ReactElement {
-    const { centerDirectorData, centerDirector } = this.props;
+    const { centerDirector } = this.props;
     
     if (!centerDirector) return <></>;
 
