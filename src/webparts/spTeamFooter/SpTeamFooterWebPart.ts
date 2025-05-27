@@ -22,11 +22,18 @@ export interface ISpTeamFooterWebPartProps {
   centerDirector: IPropertyFieldGroupOrPerson[];
 }
 
+interface IListInfo {
+  id: string;
+  title: string;
+  entityTypeName: string;
+}
+
 export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFooterWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _siteLists: IPropertyPaneDropdownOption[] = [];
+  private _listsInfo: { [key: string]: IListInfo } = {};
   private _centerDirectorData: any = null;
 
   public render(): void {
@@ -68,7 +75,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   private async _loadSiteLists(): Promise<void> {
     try {
       const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title&$filter=Hidden eq false`,
+        `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title,EntityTypeName&$filter=Hidden eq false`,
         SPHttpClient.configurations.v1
       );
       
@@ -78,9 +85,35 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
           key: list.Id,
           text: list.Title
         }));
+
+        console.log(data.value);
+
+        // Store additional list info separately
+        data.value.forEach((list: any) => {
+          this._listsInfo[list.Id] = {
+            id: list.Id,
+            title: list.Title,
+            entityTypeName: list.EntityTypeName
+          };
+        });
       }
     } catch (error) {
       console.error('Error loading site lists:', error);
+    }
+  }
+
+  private _generateListViewUrl(listId: string): string {
+    if (!listId || !this._listsInfo[listId]) return '';
+    
+    const listInfo = this._listsInfo[listId];
+    
+    if (listInfo.title) {
+      // Fallback: Use the list title with proper encoding
+      const encodedTitle = encodeURIComponent(listInfo.title);
+      return `${this.context.pageContext.web.absoluteUrl}/Lists/${encodedTitle}`;
+    } else {
+      // Final fallback: Use the generic list view with list ID
+      return `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listform.aspx?PageType=0&ListId={${listId}}`;
     }
   }
 
@@ -88,10 +121,6 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
     try {
       if (this.properties.centerDirector && this.properties.centerDirector.length > 0) {
         const userInfo = this.properties.centerDirector[0];
-        // const response: SPHttpClientResponse = await this.context.spHttpClient.get(
-        //   `${this.context.pageContext.web.absoluteUrl}/_api/web/getuserbyid(${userInfo.id})`,
-        //   SPHttpClient.configurations.v1
-        // );
 
         const responseDetailed: SPHttpClientResponse = await this.context.spHttpClient.get(
           `${this.context.pageContext.web.absoluteUrl}/_api/SP.UserProfiles.PeopleManager/GetPropertiesFor(accountName='${encodeURIComponent(userInfo.id!)}')`,
@@ -99,11 +128,7 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
         );
 
         if (responseDetailed.ok) {
-          var xd = await responseDetailed.json();
-
-          console.log(xd);
-
-          this._centerDirectorData = xd;
+          this._centerDirectorData = await responseDetailed.json();
         }
       }
     } catch (error) {
@@ -178,8 +203,8 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    const listViewUrl = this.properties.listId ? 
-      `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listedit.aspx?List={${this.properties.listId}}` : '';
+    // Generate proper list view URL using list name instead of edit URL
+    const listViewUrl = this.properties.listId ? this._generateListViewUrl(this.properties.listId) : '';
     const newListUrl = `${this.context.pageContext.web.absoluteUrl}/_layouts/15/new.aspx?FeatureId={00bfea71-de22-43b2-a848-c05709900100}&ListTemplate=100`;
 
     const fields: IPropertyPaneField<any>[] = [
