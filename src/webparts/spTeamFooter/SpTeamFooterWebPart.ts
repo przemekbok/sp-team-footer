@@ -22,11 +22,18 @@ export interface ISpTeamFooterWebPartProps {
   centerDirector: IPropertyFieldGroupOrPerson[];
 }
 
+interface IListInfo {
+  id: string;
+  title: string;
+  entityTypeName: string;
+}
+
 export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFooterWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _siteLists: IPropertyPaneDropdownOption[] = [];
+  private _listsInfo: { [key: string]: IListInfo } = {};
   private _centerDirectorData: any = null;
 
   public render(): void {
@@ -76,41 +83,35 @@ export default class SpTeamFooterWebPart extends BaseClientSideWebPart<ISpTeamFo
         const data = await response.json();
         this._siteLists = data.value.map((list: any) => ({
           key: list.Id,
-          text: list.Title,
-          data: {
-            entityTypeName: list.EntityTypeName,
-            title: list.Title
-          }
+          text: list.Title
         }));
+
+        // Store additional list info separately
+        data.value.forEach((list: any) => {
+          this._listsInfo[list.Id] = {
+            id: list.Id,
+            title: list.Title,
+            entityTypeName: list.EntityTypeName
+          };
+        });
       }
     } catch (error) {
       console.error('Error loading site lists:', error);
     }
   }
 
-  private _getListNameFromId(listId: string): string {
-    const list = this._siteLists.find(list => list.key === listId);
-    return list ? list.data?.entityTypeName || list.text : '';
-  }
-
-  private _getListTitleFromId(listId: string): string {
-    const list = this._siteLists.find(list => list.key === listId);
-    return list ? list.text : '';
-  }
-
   private _generateListViewUrl(listId: string): string {
-    if (!listId) return '';
+    if (!listId || !this._listsInfo[listId]) return '';
     
-    const listName = this._getListNameFromId(listId);
-    const listTitle = this._getListTitleFromId(listId);
+    const listInfo = this._listsInfo[listId];
     
     // Try different URL patterns based on list type and availability
-    if (listName) {
+    if (listInfo.entityTypeName) {
       // For custom lists, use the EntityTypeName in the URL
-      return `${this.context.pageContext.web.absoluteUrl}/Lists/${listName}`;
-    } else if (listTitle) {
+      return `${this.context.pageContext.web.absoluteUrl}/Lists/${listInfo.entityTypeName}`;
+    } else if (listInfo.title) {
       // Fallback: Use the list title with proper encoding
-      const encodedTitle = encodeURIComponent(listTitle.replace(/ /g, ''));
+      const encodedTitle = encodeURIComponent(listInfo.title.replace(/ /g, ''));
       return `${this.context.pageContext.web.absoluteUrl}/Lists/${encodedTitle}`;
     } else {
       // Final fallback: Use the generic list view with list ID
